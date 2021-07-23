@@ -6,10 +6,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
 import jp.techacademy.ayumi.taskapp.databinding.ActivityMainBinding
+import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -17,15 +17,36 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        fab.setOnClickListener { view ->
+            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()
+        }
+        // ListViewの設定
+        mTaskAdapter = TaskAdapter(this)
 
-        setSupportActionBar(binding.toolbar)
+        // ListViewをタップしたときの処理
+        listView1.setOnItemClickListener { parent, view, position, id ->
+            // 入力・編集する画面に遷移させる
+    }
 
+        // ListViewを長押ししたときの処理
+        listView1.setOnItemLongClickListener { parent, view, position, id ->
+            // タスクを削除する
+            true
+        }
+
+        reloadListView()
+    }
+
+    private fun reloadListView() {
+        // 後でTaskクラスに変更する
         val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
+
+        mTaskAdapter.mTaskList = taskList
+        listView1.adapter = mTaskAdapter
+        mTaskAdapter.notifyDataSetChanged()
 
         binding.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
