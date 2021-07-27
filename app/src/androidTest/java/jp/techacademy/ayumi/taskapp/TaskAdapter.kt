@@ -38,6 +38,10 @@ class TaskAdapter: BaseAdapter() {
         // 後でTaskクラスから情報を取得するように変更する
         textView1.text = mTaskList[position]
 
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE)
+        val date = mTaskList[position].date
+        textView2.text = simpleDateFormat.format(date)
+
         return view
     }
 }
