@@ -3,13 +3,11 @@ package jp.techacademy.ayumi.taskapp
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import android.view.Menu
-import android.view.MenuItem
-import jp.techacademy.ayumi.taskapp.databinding.ActivityMainBinding
+import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
+import io.realm.RealmChangeListener
+import io.realm.Sort
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -21,8 +19,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var mTaskAdapter: TaskAdapter
-
-    const val EXTRA_TASK = "jp.techacademy.ayumi.ochiai.taskapp.TASK"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,16 +39,12 @@ class MainActivity : AppCompatActivity() {
         // ListViewをタップしたときの処理
         listView1.setOnItemClickListener { parent, view, position, id ->
             // 入力・編集する画面に遷移させる
-            val task = parent.adapter.getItem(position) as Task
-            val intent = Intent(this, InputActivity::class.java)
-            intent.putExtra(EXTRA_TASK, task.id)
-            startActivity(intent)
     }
 
         // ListViewを長押ししたときの処理
         listView1.setOnItemLongClickListener { parent, view, position, id ->
             // タスクを削除する
-            val task = parent.adapter.getItem(position) as Task
+            true
         }
 // アプリ起動時に表示テスト用のタスクを作成する
         addTaskForTest()
@@ -61,7 +53,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun reloadListView() {
-        // 後でTaskクラスに変更する
+        // Realmデータベースから、「すべてのデータを取得して新しい日時順に並べた結果」を取得
         val taskRealmResults = mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
 
         // 上記の結果を、TaskListとしてセットする
@@ -73,4 +65,20 @@ class MainActivity : AppCompatActivity() {
         // 表示を更新するために、アダプターにデータが変更されたことを知らせる
         mTaskAdapter.notifyDataSetChanged()
     }
+    override fun onDestroy() {
+        super.onDestroy()
 
+        mRealm.close()
+    }
+
+    private fun addTaskForTest() {
+        val task = Task()
+        task.title = "作業"
+        task.contents = "プログラムを書いてPUSHする"
+        task.date = Date()
+        task.id = 0
+        mRealm.beginTransaction()
+        mRealm.copyToRealmOrUpdate(task)
+        mRealm.commitTransaction()
+    }
+}

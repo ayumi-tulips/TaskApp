@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class TaskAdapter: BaseAdapter() {
@@ -35,8 +37,7 @@ class TaskAdapter: BaseAdapter() {
         val textView1 = view.findViewById<TextView>(android.R.id.text1)
         val textView2 = view.findViewById<TextView>(android.R.id.text2)
 
-        // 後でTaskクラスから情報を取得するように変更する
-        textView1.text = mTaskList[position]
+        textView1.text = mTaskList[position].title
 
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.JAPANESE)
         val date = mTaskList[position].date
