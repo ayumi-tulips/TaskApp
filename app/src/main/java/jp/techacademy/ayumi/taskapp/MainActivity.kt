@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mTaskAdapter: TaskAdapter
 
+    const val EXTRA_TASK = "jp.techacademy.ayumi.ochiai.taskapp.TASK"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,12 +43,16 @@ class MainActivity : AppCompatActivity() {
         // ListViewをタップしたときの処理
         listView1.setOnItemClickListener { parent, view, position, id ->
             // 入力・編集する画面に遷移させる
+            val task = parent.adapter.getItem(position) as Task
+            val intent = Intent(this, InputActivity::class.java)
+            intent.putExtra(EXTRA_TASK, task.id)
+            startActivity(intent)
     }
 
         // ListViewを長押ししたときの処理
         listView1.setOnItemLongClickListener { parent, view, position, id ->
             // タスクを削除する
-            true
+            val task = parent.adapter.getItem(position) as Task
         }
 // アプリ起動時に表示テスト用のタスクを作成する
         addTaskForTest()
@@ -68,20 +74,3 @@ class MainActivity : AppCompatActivity() {
         mTaskAdapter.notifyDataSetChanged()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-        mRealm.close()
-    }
-
-    private fun addTaskForTest() {
-        val task = Task()
-        task.title = "作業"
-        task.contents = "プログラムを書いてPUSHする"
-        task.date = Date()
-        task.id = 0
-        mRealm.beginTransaction()
-        mRealm.copyToRealmOrUpdate(task)
-        mRealm.commitTransaction()
-    }
-}
